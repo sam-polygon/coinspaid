@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Polygon — API Integration Options: Full Stack vs Modular</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --coinme-green: #00C37A;
+    --coinme-green-dark: #00A368;
+    --coinme-green-light: #E6FAF2;
+    --coinme-dark: #0D1117;
+    --coinme-charcoal: #1C2230;
+    --coinme-mid: #3A4560;
+    --coinme-muted: #6B7A99;
+    --coinme-border: #E4E9F0;
+    --coinme-bg: #F7F9FC;
+    --white: #ffffff;
+    --text-main: #0D1117;
+    --text-muted: #6B7A99;
+    --accent-blue: #2563EB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--coinme-bg);
+    color: var(--text-main);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .page { width: 850px; margin: 0 auto; background: var(--white); }
+
+  /* ═══ COVER ═══ */
+  .cover { background: var(--white); position: relative; overflow: hidden; border-bottom: 1px solid var(--coinme-border); }
+  .cover-topbar { background: var(--coinme-green); height: 5px; width: 100%; }
+  .cover-inner { padding: 48px 64px 48px; position: relative; }
+  .cover-inner::before {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 380px; height: 100%;
+    background-image:
+      linear-gradient(rgba(0,195,122,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,195,122,0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+  .cover-inner::after {
+    content: 'P';
+    position: absolute; top: -30px; right: 30px;
+    font-family: 'Inter', sans-serif; font-weight: 900; font-size: 340px;
+    color: rgba(0,195,122,0.05); line-height: 1;
+    pointer-events: none; user-select: none;
+  }
+  .cover-logo-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 48px; position: relative; z-index: 1;
+  }
+  .logo-group {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .logo-wordmark {
+    font-family: 'Inter', sans-serif; font-weight: 800; font-size: 20px;
+    color: var(--coinme-dark); letter-spacing: -0.02em;
+  }
+  .logo-divider {
+    width: 1px; height: 22px; background: var(--coinme-border);
+  }
+  .bitmart-wordmark {
+    font-family: 'Inter', sans-serif; font-weight: 800; font-size: 20px;
+    color: var(--coinme-dark); letter-spacing: -0.02em;
+  }
+  .coinspaid-wordmark {
+    font-family: 'Inter', sans-serif; font-weight: 800; font-size: 20px;
+    color: var(--coinme-dark); letter-spacing: -0.02em;
+  }
+  .cover-badge {
+    background: var(--coinme-green-light); border: 1px solid rgba(0,195,122,0.25);
+    color: var(--coinme-green-dark); font-size: 11px; font-weight: 600;
+    padding: 5px 14px; border-radius: 20px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .cover-kicker {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--coinme-green-dark); margin-bottom: 10px;
+    position: relative; z-index: 1;
+  }
+  .cover-title {
+    font-family: 'Inter', sans-serif; font-weight: 800; font-size: 38px;
+    color: var(--coinme-dark); line-height: 1.1; letter-spacing: -0.03em;
+    position: relative; z-index: 1; margin-bottom: 20px;
+  }
+  .cover-title-under { display: inline-block; position: relative; }
+  .cover-title-under::after {
+    content: ''; display: block; height: 4px;
+    background: var(--coinme-green); border-radius: 2px; margin-top: 6px; width: 100%;
+  }
+  .cover-tagline {
+    font-size: 15px; font-weight: 400; color: var(--coinme-muted);
+    line-height: 1.65; max-width: 560px; position: relative; z-index: 1;
+  }
+  .cover-tagline strong { color: var(--coinme-charcoal); font-weight: 600; }
+
+  /* ═══ SECTIONS ═══ */
+  .section { padding: 48px 64px; border-bottom: 1px solid var(--coinme-border); }
+  .section:last-child { border-bottom: none; }
+  .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--coinme-green-dark); margin-bottom: 8px; }
+  .section-title { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 26px; color: var(--coinme-dark); margin-bottom: 16px; line-height: 1.2; letter-spacing: -0.02em; }
+  .section-body { color: var(--text-muted); font-size: 14px; line-height: 1.8; max-width: 680px; }
+  .section-body p + p { margin-top: 14px; }
+
+  /* ═══ COMPARISON CARDS ═══ */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 24px 0; }
+  .compare-card { border-radius: 12px; padding: 28px 26px; }
+  .compare-card.dark { background: var(--coinme-dark); color: var(--white); }
+  .compare-card.light { background: var(--coinme-bg); border: 1px solid var(--coinme-border); }
+  .compare-card-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+  .compare-card.dark .compare-card-label { color: var(--coinme-green); }
+  .compare-card.light .compare-card-label { color: var(--coinme-green-dark); }
+  .compare-card-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 10px; letter-spacing: -0.01em; }
+  .compare-card.dark .compare-card-title { color: var(--white); }
+  .compare-card.light .compare-card-title { color: var(--coinme-dark); }
+  .compare-card-body { font-size: 13px; line-height: 1.7; margin-bottom: 18px; }
+  .compare-card.dark .compare-card-body { color: rgba(255,255,255,0.55); }
+  .compare-card.light .compare-card-body { color: var(--text-muted); }
+  .compare-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .compare-list li { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .compare-list .icon-check { color: var(--coinme-green); font-weight: 700; font-size: 14px; min-width: 18px; text-align: center; }
+  .compare-card.dark .compare-list li { color: rgba(255,255,255,0.72); }
+  .compare-card.light .compare-list li { color: var(--coinme-mid); }
+
+  /* ═══ TABLE ═══ */
+  .compare-table { width: 100%; border-collapse: collapse; margin: 24px 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--coinme-border); }
+  .compare-table thead th {
+    padding: 16px 20px; font-size: 13px; font-weight: 700; text-align: left;
+    border-bottom: 2px solid var(--coinme-border);
+  }
+  .compare-table thead th:first-child { background: var(--coinme-bg); color: var(--coinme-muted); width: 30%; }
+  .compare-table thead th.col-a { background: var(--coinme-dark); color: var(--white); width: 35%; }
+  .compare-table thead th.col-b { background: var(--coinme-bg); color: var(--coinme-dark); width: 35%; }
+  .compare-table tbody td {
+    padding: 13px 20px; font-size: 13px; border-bottom: 1px solid var(--coinme-border);
+    vertical-align: top;
+  }
+  .compare-table tbody tr:last-child td { border-bottom: none; }
+  .compare-table tbody td:first-child { font-weight: 600; color: var(--coinme-charcoal); background: var(--coinme-bg); }
+  .compare-table tbody td:nth-child(2) { color: var(--coinme-mid); }
+  .compare-table tbody td:nth-child(3) { color: var(--coinme-mid); }
+
+  /* ═══ USE CASE ═══ */
+  .use-case { background: var(--coinme-dark); border-radius: 14px; padding: 30px 34px; margin: 24px 0; color: var(--white); }
+  .use-case-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 16px; color: var(--white); letter-spacing: -0.01em; margin-bottom: 14px; }
+  .use-case-body { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.75; }
+  .use-case-body strong { color: rgba(255,255,255,0.88); font-weight: 600; }
+
+  /* ═══ CALLOUT ═══ */
+  .callout { background: var(--coinme-green-light); border-left: 4px solid var(--coinme-green); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 18px 0; font-size: 13px; color: #064e35; line-height: 1.7; }
+  .callout.neutral { background: #EFF6FF; border-left-color: var(--accent-blue); color: #1e3a5f; }
+
+  /* ═══ WHY LIST ═══ */
+  .why-list { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+  .why-item { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: 10px; border: 1px solid var(--coinme-border); background: var(--white); }
+  .why-icon { font-size: 18px; min-width: 32px; text-align: center; margin-top: 2px; }
+  .why-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; color: var(--coinme-dark); margin-bottom: 3px; letter-spacing: -0.01em; }
+  .why-body { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ═══ PRICING BUTTON SECTION ═══ */
+  .pricing-section { padding: 48px 64px; text-align: center; }
+  .pricing-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--coinme-green); color: var(--white);
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 15px;
+    padding: 16px 36px; border-radius: 10px; text-decoration: none;
+    letter-spacing: -0.01em;
+    transition: background 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0,195,122,0.25);
+  }
+  .pricing-btn:hover { background: var(--coinme-green-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,195,122,0.35); }
+  .pricing-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+  /* ═══ FOOTER ═══ */
+  .footer { padding: 24px 64px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--coinme-border); background: var(--white); }
+  .footer-wordmark { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 14px; color: var(--coinme-dark); letter-spacing: -0.02em; }
+  .footer-text { font-size: 11px; color: var(--text-muted); text-align: right; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ COVER ══ -->
+  <div class="cover">
+    <div class="cover-topbar"></div>
+    <div class="cover-inner">
+      <div class="cover-logo-row">
+        <div class="logo-group">
+          <div class="logo-wordmark">Polygon</div>
+          <div class="logo-divider"></div>
+          <div class="coinspaid-wordmark">CoinsPaid</div>
+        </div>
+        <div class="cover-badge">Confidential · Integration Guide</div>
+      </div>
+      <div class="cover-kicker">Crypto-as-a-Service API</div>
+      <div class="cover-title">
+        <span class="cover-title-under">Full Stack vs Modular</span><br/>API Integration Options
+      </div>
+      <div class="cover-tagline">
+        Use Polygon, powered by Coinme, for <strong>everything — KYC, payments, conversion, and custody</strong> — or plug Polygon into your existing stack and use only the services you need. Same API, two approaches.
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ AT A GLANCE ══ -->
+  <div class="section">
+    <div class="section-label">Overview</div>
+    <div class="section-title">One API, Two Approaches</div>
+    <div class="section-body">
+      <p>Polygon's API is modular by design. Partners can use Polygon as the single provider for their entire US crypto stack, or they can bring their own providers for KYC, payment processing, and wallets — and use Polygon only for the pieces they need. Both approaches use the same RESTful API and run on the same licensed infrastructure.</p>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card dark">
+        <div class="compare-card-label">One Partner, Full Stack</div>
+        <div class="compare-card-title">Polygon, Powered by Coinme, for Everything</div>
+        <div class="compare-card-body">Let Polygon handle KYC, payment processing, fiat-to-crypto conversion, and custodial wallets — a single integration that covers the entire US crypto stack.</div>
+        <ul class="compare-list">
+          <li><span class="icon-check">✓</span> Single vendor for the full stack</li>
+          <li><span class="icon-check">✓</span> Polygon KYC with non-documentary screening</li>
+          <li><span class="icon-check">✓</span> Polygon card acquiring (AFT and OCT) &amp; chargeback guarantee</li>
+          <li><span class="icon-check">✓</span> Physical cash at 50,000+ locations</li>
+          <li><span class="icon-check">✓</span> Polygon custodial wallets (unlimited, no fees)</li>
+        </ul>
+      </div>
+      <div class="compare-card light">
+        <div class="compare-card-label">Your Stack, Polygon Where Needed</div>
+        <div class="compare-card-title">Bring Your Own Providers</div>
+        <div class="compare-card-body">Already have a KYC vendor, payment processor, or wallet infrastructure? Keep using them. Plug Polygon in for only the modules you're missing.</div>
+        <ul class="compare-list">
+          <li><span class="icon-check">✓</span> Keep your existing KYC provider</li>
+          <li><span class="icon-check">✓</span> Keep your existing payment processor</li>
+          <li><span class="icon-check">✓</span> Use your own wallets or external delivery</li>
+          <li><span class="icon-check">✓</span> Polygon for conversion &amp; licensing only</li>
+          <li><span class="icon-check">✓</span> Mix and match by module</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SIDE-BY-SIDE TABLE ══ -->
+  <div class="section">
+    <div class="section-label">Comparison</div>
+    <div class="section-title">Module-by-Module Breakdown</div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="col-a">🟢 Polygon Full Stack</th>
+          <th class="col-b">🔧 Bring Your Own</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>KYC &amp; Compliance</td>
+          <td>Polygon's non-documentary screening — sanctions, SSN, age &amp; identity</td>
+          <td>Use your own KYC provider; pass verified data via API at no fee</td>
+        </tr>
+        <tr>
+          <td>Payment Processing</td>
+          <td>Polygon acquires &amp; processes — Apple Pay, Google Pay, debit, ACH, cash</td>
+          <td>Use your own processor; route settled funds to Polygon for conversion</td>
+        </tr>
+        <tr>
+          <td>Chargeback Protection</td>
+          <td>Polygon guarantees chargebacks on card onramp transactions</td>
+          <td>Managed by your processor — Polygon not involved in card settlement</td>
+        </tr>
+        <tr>
+          <td>Physical Cash</td>
+          <td>50,000+ retail &amp; ATM locations included</td>
+          <td>Available as an add-on module</td>
+        </tr>
+        <tr>
+          <td>Fiat ↔ Crypto Conversion</td>
+          <td>Included — stablecoins and non-stablecoin assets</td>
+          <td>Included — same conversion engine regardless of payment source</td>
+        </tr>
+        <tr>
+          <td>Wallet Delivery</td>
+          <td>Polygon custodial wallets — unlimited, no per-wallet fee</td>
+          <td>Deliver to your wallets or directly to user's external wallet</td>
+        </tr>
+        <tr>
+          <td>Licensing &amp; Compliance</td>
+          <td>Fully covered — 37 MTLs, 48 states</td>
+          <td>Fully covered — 37 MTLs, 48 states</td>
+        </tr>
+        <tr>
+          <td>Vendor Relationships</td>
+          <td>One — Polygon handles everything</td>
+          <td>Multiple — Polygon + your existing providers</td>
+        </tr>
+        <tr>
+          <td>Integration Complexity</td>
+          <td>Single integration, all modules connected</td>
+          <td>Lighter Polygon integration, but manage multiple vendors</td>
+        </tr>
+        <tr>
+          <td>Best For</td>
+          <td>Partners who want a single, end-to-end solution</td>
+          <td>Partners with existing infrastructure who need specific capabilities</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ FULL STACK DEEP DIVE ══ -->
+  <div class="section">
+    <div class="section-label">Polygon Full Stack</div>
+    <div class="section-title">One Integration, Complete Coverage</div>
+    <div class="section-body">
+      <p>When you use Polygon for everything, you get a single vendor relationship that covers the full US crypto stack — from user onboarding through transaction settlement. No need to coordinate between separate KYC, payment, and custody providers. One API, one contract, one integration.</p>
+    </div>
+
+    <div class="use-case">
+      <div class="use-case-title">How It Works: Full Stack Flow</div>
+      <div class="use-case-body">
+        A new user initiates a transaction in your app. Polygon runs <strong>non-documentary KYC screening</strong> in the background. The user pays via <strong>Apple Pay, Google Pay, debit card, ACH, or physical cash</strong> — all processed natively by Polygon. Polygon converts the settled USD to the target asset and delivers it to a <strong>Polygon-provisioned custodial wallet</strong>. Your platform receives a webhook confirmation.<br/><br/>
+        Every step — KYC, payment authorization, conversion, and custody — is handled by Polygon under a <strong>single API integration</strong>. Polygon also provides a <strong>chargeback guarantee</strong> on all card onramp transactions and access to <strong>50,000+ cash and ATM locations</strong> nationwide.
+      </div>
+    </div>
+
+    <ul class="why-list">
+      <li class="why-item">
+        <div class="why-icon">🔗</div>
+        <div><div class="why-title">Single Vendor, Zero Coordination</div><div class="why-body">No need to manage separate relationships with a KYC provider, payment processor, and custody platform. Polygon is the one partner for everything.</div></div>
+      </li>
+      <li class="why-item">
+        <div class="why-icon">🛡️</div>
+        <div><div class="why-title">Chargeback Guarantee Included</div><div class="why-body">Polygon absorbs chargeback liability on Apple Pay, Google Pay, and debit card onramp — a significant risk removed from your payment stack.</div></div>
+      </li>
+      <li class="why-item">
+        <div class="why-icon">💵</div>
+        <div><div class="why-title">Physical Cash Built In</div><div class="why-body">50,000+ retail and ATM locations for cash-preferred and unbanked users — a channel that modular-only integrations can't easily replicate.</div></div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══ MODULAR DEEP DIVE ══ -->
+  <div class="section">
+    <div class="section-label">Bring Your Own Providers</div>
+    <div class="section-title">Plug Polygon Into Your Existing Stack</div>
+    <div class="section-body">
+      <p>If you already have a KYC vendor, payment processor, or wallet infrastructure, you don't need to replace them. Polygon's API is modular — use Polygon for conversion and licensing, and keep your existing providers for everything else. Pass verified KYC data via API at no fee, route settled funds from your processor to Polygon for conversion, and have converted assets delivered to your own wallets or directly to a user's external wallet.</p>
+    </div>
+
+    <div class="use-case">
+      <div class="use-case-title">How It Works: Modular Flow</div>
+      <div class="use-case-body">
+        A user completes KYC through <strong>your existing provider</strong>. You pass the verified data to Polygon via API — no additional screening fee. The user pays through <strong>your payment processor</strong>, and you route the settled USD to Polygon. Polygon converts the funds to the target asset and delivers to <strong>your wallet infrastructure or the user's external wallet</strong>. Your platform receives a webhook confirmation.<br/><br/>
+        Polygon handles <strong>conversion and regulatory licensing</strong> (37 MTLs, 48 states) — your partner doesn't need to apply for or maintain US crypto licenses regardless of which modules they use.
+      </div>
+    </div>
+
+    <ul class="why-list">
+      <li class="why-item">
+        <div class="why-icon">🧩</div>
+        <div><div class="why-title">Keep What's Already Working</div><div class="why-body">No need to rip out existing vendors. If your KYC, payments, or wallets are already in place, keep them and add Polygon for what's missing.</div></div>
+      </li>
+      <li class="why-item">
+        <div class="why-icon">📤</div>
+        <div><div class="why-title">Flexible Wallet Delivery</div><div class="why-body">Deliver converted assets to your own wallet infrastructure or directly to a user's existing external wallet — same API either way.</div></div>
+      </li>
+      <li class="why-item">
+        <div class="why-icon">🏛️</div>
+        <div><div class="why-title">Licensing Always Included</div><div class="why-body">Regardless of which modules you use, Polygon's 37 MTLs and 48-state coverage mean you don't need your own US crypto licenses.</div></div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══ WHICH IS RIGHT ══ -->
+  <div class="section">
+    <div class="section-label">Guidance</div>
+    <div class="section-title">Which Approach Is Right for You?</div>
+
+    <div class="compare-grid">
+      <div class="compare-card dark">
+        <div class="compare-card-label">Use Polygon for everything if you…</div>
+        <div class="compare-card-body" style="margin-bottom:0;">
+          <ul class="compare-list">
+            <li><span class="icon-check">✓</span> Want a single vendor for the full US stack</li>
+            <li><span class="icon-check">✓</span> Don't have existing KYC or payment providers</li>
+            <li><span class="icon-check">✓</span> Want chargeback protection included</li>
+            <li><span class="icon-check">✓</span> Need physical cash on-ramp support</li>
+            <li><span class="icon-check">✓</span> Prefer one integration over coordinating multiple</li>
+          </ul>
+        </div>
+      </div>
+      <div class="compare-card light">
+        <div class="compare-card-label">Bring your own providers if you…</div>
+        <div class="compare-card-body" style="margin-bottom:0;">
+          <ul class="compare-list">
+            <li><span class="icon-check">✓</span> Already have a KYC vendor you're happy with</li>
+            <li><span class="icon-check">✓</span> Already have a payment processor in place</li>
+            <li><span class="icon-check">✓</span> Want to maintain your own wallet infrastructure</li>
+            <li><span class="icon-check">✓</span> Only need Polygon for conversion &amp; licensing</li>
+            <li><span class="icon-check">✓</span> Want the lightest possible Polygon integration</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>You can always evolve.</strong> Many partners start with Polygon for a few modules and expand over time. The API is the same regardless of how many services you use — adding a module later is straightforward, not a re-integration.
+    </div>
+  </div>
+
+
+  <!-- ══ COINSPAID PRICING BUTTON ══ -->
+  <div class="pricing-section">
+    <a href="https://docs.google.com/spreadsheets/d/1UY7d0BB0WXu9udlDOo30pDqARgZD98GlxpVW1d32Yvo/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="pricing-btn">
+      <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M4 4a2 2 0 0 1 2-2h4.586A2 2 0 0 1 12 2.586L15.414 6A2 2 0 0 1 16 7.414V16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zm2 0v12h8V7.414L10.586 4H6zm2 5a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1zm0 3a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H9a1 1 0 0 1-1-1z"/></svg>
+      CoinsPaid Pricing Sheet
+    </a>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    <div class="footer-wordmark">Polygon</div>
+    <div class="footer-text">
+      Polygon Labs · Confidential<br/>
+      This document is for informational purposes and is subject to execution of a definitive agreement.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
